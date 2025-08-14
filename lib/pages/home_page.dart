@@ -1,4 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:youtube_app/constans.dart';
 import 'package:youtube_app/core/widgets/appbar_widget.dart';
 import 'package:youtube_app/core/widgets/video_item.dart';
 
@@ -12,8 +15,26 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   TextEditingController controller = TextEditingController();
   final FocusNode focusNode = FocusNode();
+  List items = [];
+  // search Video
+  Future<void> searchVideos(String keyWord) async {
+    final uri = '${AppConsts.baseUrl}/search/?q=$keyWord&hl=en&gl=US';
+
+    final url = Uri.parse(uri);
+
+    final response = await http.get(url, headers: AppConsts.headers);
+
+    final json = jsonDecode(response.body) as Map;
+
+    final result = json['contents'] as List;
+    setState(() {
+      items = result;
+    });
+  }
+
   @override
   void initState() {
+    searchVideos('flutter');
     super.initState();
   }
 
@@ -41,6 +62,7 @@ class _HomePageState extends State<HomePage> {
         body: ListView.builder(
           itemCount: 10,
           itemBuilder: (context, index) {
+            final item = items[index];
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: VideoItem(
