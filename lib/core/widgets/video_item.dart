@@ -9,8 +9,9 @@ class VideoItem extends StatelessWidget {
     required this.channelName,
     required this.timing,
     required this.views,
+    required this.channelImage,
   });
-  final String thumbnail, title, channelName, timing, views;
+  final String thumbnail, title, channelName, timing, views, channelImage;
 
   @override
   Widget build(BuildContext context) {
@@ -55,13 +56,17 @@ class VideoItem extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Row(
             children: [
-              CircleAvatar(radius: 20),
+              CircleAvatar(radius: 20, child: Image.network(channelImage)),
 
               SizedBox(width: 10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CustomText(title: title, fontWeight: FontWeight.bold),
+                  CustomText(
+                    title: title,
+                    fontWeight: FontWeight.w400,
+              
+                  ),
                   CustomText(
                     title: '$channelName    $views views   $timing',
                     color: Colors.grey,

@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:youtube_app/constans.dart';
@@ -34,7 +35,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    searchVideos('flutter');
+    searchVideos('despacito');
     super.initState();
   }
 
@@ -60,19 +61,18 @@ class _HomePageState extends State<HomePage> {
         ),
 
         body: ListView.builder(
-          itemCount: 10,
+          itemCount: items.length,
           itemBuilder: (context, index) {
             final item = items[index];
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: VideoItem(
-                thumbnail:
-                    'https://plus.unsplash.com/premium_photo-1664392147011-2a720f214e01?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZHVjdHxlbnwwfHwwfHx8MA%3D%3D',
-                channelName: 'Hesham',
-                timing: '8 day ago',
-                views: '490k',
-                title: 'Movie',
-              ),
+            final video = item['video'];
+            final channel = item['channel'];
+            return VideoItem(
+              thumbnail: video['thumbnails'][1]['url'],
+              channelName: video['author']['title'],
+              timing: video['publishedTimeText'],
+              views: video['stats']['views'].toString(),
+              title: video['title'],
+              channelImage: video['author']['avatar'][0]['url'],
             );
           },
         ),
