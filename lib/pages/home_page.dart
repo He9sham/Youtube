@@ -17,6 +17,26 @@ class _HomePageState extends State<HomePage> {
   TextEditingController controller = TextEditingController();
   final FocusNode focusNode = FocusNode();
   List items = [];
+  // Convert seconds to MM:SS format
+  String _formatDuration(int seconds) {
+    int minutes = seconds ~/ 60;
+    int remainingSeconds = seconds % 60;
+    return '$minutes:${remainingSeconds.toString().padLeft(2, '0')}';
+  }
+
+  // Format large numbers to K, M, B format
+  String _formatViews(int views) {
+    if (views >= 1000000000) {
+      return '${(views / 1000000000).toStringAsFixed(1)}B';
+    } else if (views >= 1000000) {
+      return '${(views / 1000000).toStringAsFixed(1)}M';
+    } else if (views >= 1000) {
+      return '${(views / 1000).toStringAsFixed(1)}K';
+    } else {
+      return views.toString();
+    }
+  }
+
   // search Video
   Future<void> searchVideos(String keyWord) async {
     final uri = '${AppConsts.baseUrl}/search/?q=$keyWord&hl=en&gl=US';
@@ -66,13 +86,21 @@ class _HomePageState extends State<HomePage> {
             final item = items[index];
             final video = item['video'];
             final channel = item['channel'];
-            return VideoItem(
-              thumbnail: video['thumbnails'][1]['url'],
-              channelName: video['author']['title'],
-              timing: video['publishedTimeText'],
-              views: video['stats']['views'].toString(),
-              title: video['title'],
-              channelImage: video['author']['avatar'][0]['url'],
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: VideoItem(
+                timeVideo: _formatDuration(
+                  int.parse(video['lengthSeconds'].toString()),
+                ),
+                thumbnail: video['thumbnails'][1]['url'],
+                channelName: video['author']['title'],
+                timing: video['publishedTimeText'],
+                views: _formatViews(
+                  int.parse(video['stats']['views'].toString()),
+                ),
+                title: video['title'],
+                channelImage: video['author']['avatar'][0]['url'],
+              ),
             );
           },
         ),

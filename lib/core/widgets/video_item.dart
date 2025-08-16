@@ -10,8 +10,15 @@ class VideoItem extends StatelessWidget {
     required this.timing,
     required this.views,
     required this.channelImage,
+    required this.timeVideo,
   });
-  final String thumbnail, title, channelName, timing, views, channelImage;
+  final String thumbnail,
+      title,
+      channelName,
+      timing,
+      views,
+      channelImage,
+      timeVideo;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +28,6 @@ class VideoItem extends StatelessWidget {
           children: [
             Image.network(
               thumbnail,
-              height: 350,
               errorBuilder: (context, error, stackTrace) {
                 return Container(
                   color: Colors.white,
@@ -41,7 +47,7 @@ class VideoItem extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
                 color: Colors.black54,
                 child: CustomText(
-                  title: '99 : 08',
+                  title: timeVideo,
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
                 ),
@@ -59,19 +65,17 @@ class VideoItem extends StatelessWidget {
               CircleAvatar(radius: 20, child: Image.network(channelImage)),
 
               SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomText(
-                    title: title,
-                    fontWeight: FontWeight.w400,
-              
-                  ),
-                  CustomText(
-                    title: '$channelName    $views views   $timing',
-                    color: Colors.grey,
-                  ),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomText(title: title, fontWeight: FontWeight.w400),
+                    CustomText(
+                      title: '$channelName    $views views   $timing',
+                      color: Colors.grey,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
