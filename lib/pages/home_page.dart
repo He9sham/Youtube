@@ -47,7 +47,19 @@ class _HomePageState extends State<HomePage> {
 
     final json = jsonDecode(response.body) as Map;
 
+    // Debug: Print the response structure
+    print('API Response structure: ${json.keys.toList()}');
+
     final result = json['contents'] as List;
+
+    // Debug: Print first item structure if available
+    if (result.isNotEmpty) {
+      print('First item structure: ${result.first.keys.toList()}');
+      if (result.first['video'] != null) {
+        print('Video keys: ${result.first['video'].keys.toList()}');
+      }
+    }
+
     setState(() {
       items = result;
     });
@@ -75,7 +87,11 @@ class _HomePageState extends State<HomePage> {
           title: AppbarWidget(
             focusNode: focusNode,
             controller: controller,
-            onSubmitted: (value) {},
+            onSubmitted: (value) {
+              setState(() {
+                searchVideos(value);
+              });
+            },
             onTap: () {},
           ),
         ),
@@ -86,20 +102,30 @@ class _HomePageState extends State<HomePage> {
             final item = items[index];
             final video = item['video'];
             final channel = item['channel'];
+
+            // Skip items that don't have video data
+            if (video == null) {
+              return const SizedBox.shrink();
+            }
+
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: VideoItem(
                 timeVideo: _formatDuration(
-                  int.parse(video['lengthSeconds'].toString()),
+                  int.parse(video['lengthSeconds']?.toString() ?? '0'),
                 ),
-                thumbnail: video['thumbnails'][1]['url'],
-                channelName: video['author']['title'],
-                timing: video['publishedTimeText'],
+                thumbnail: video['thumbnails']?.isNotEmpty == true
+                    ? video['thumbnails'][0]['url']
+                    : '',
+                channelName: video['author']?['title'] ?? '',
+                timing: video['publishedTimeText'] ?? '',
                 views: _formatViews(
-                  int.parse(video['stats']['views'].toString()),
+                  int.parse(video['stats']?['views']?.toString() ?? '0'),
                 ),
-                title: video['title'],
-                channelImage: video['author']['avatar'][0]['url'],
+                title: video['title'] ?? '',
+                channelImage: video['author']?['avatar']?.isNotEmpty == true
+                    ? video['author']['avatar'][0]['url']
+                    : '',
               ),
             );
           },
