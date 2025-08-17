@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:youtube_app/constans.dart';
 import 'package:youtube_app/core/widgets/appbar_widget.dart';
 import 'package:youtube_app/core/widgets/video_item.dart';
+import 'package:youtube_app/pages/video_details.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -47,16 +48,14 @@ class _HomePageState extends State<HomePage> {
 
     final json = jsonDecode(response.body) as Map;
 
-    // Debug: Print the response structure
-    print('API Response structure: ${json.keys.toList()}');
+    json.keys.toList();
 
     final result = json['contents'] as List;
 
-    // Debug: Print first item structure if available
     if (result.isNotEmpty) {
-      print('First item structure: ${result.first.keys.toList()}');
+      result.first.keys.toList();
       if (result.first['video'] != null) {
-        print('Video keys: ${result.first['video'].keys.toList()}');
+        result.first['video'].keys.toList();
       }
     }
 
@@ -101,8 +100,7 @@ class _HomePageState extends State<HomePage> {
           itemBuilder: (context, index) {
             final item = items[index];
             final video = item['video'];
-            final channel = item['channel'];
-
+            final id = video['videoId'];
             // Skip items that don't have video data
             if (video == null) {
               return const SizedBox.shrink();
@@ -110,22 +108,30 @@ class _HomePageState extends State<HomePage> {
 
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
-              child: VideoItem(
-                timeVideo: _formatDuration(
-                  int.parse(video['lengthSeconds']?.toString() ?? '0'),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (c) => VideoDetails(id: id)),
+                  );
+                },
+                child: VideoItem(
+                  timeVideo: _formatDuration(
+                    int.parse(video['lengthSeconds']?.toString() ?? '0'),
+                  ),
+                  thumbnail: video['thumbnails']?.isNotEmpty == true
+                      ? video['thumbnails'][0]['url']
+                      : '',
+                  channelName: video['author']?['title'] ?? '',
+                  timing: video['publishedTimeText'] ?? '',
+                  views: _formatViews(
+                    int.parse(video['stats']?['views']?.toString() ?? '0'),
+                  ),
+                  title: video['title'] ?? '',
+                  channelImage: video['author']?['avatar']?.isNotEmpty == true
+                      ? video['author']['avatar'][0]['url']
+                      : '',
                 ),
-                thumbnail: video['thumbnails']?.isNotEmpty == true
-                    ? video['thumbnails'][0]['url']
-                    : '',
-                channelName: video['author']?['title'] ?? '',
-                timing: video['publishedTimeText'] ?? '',
-                views: _formatViews(
-                  int.parse(video['stats']?['views']?.toString() ?? '0'),
-                ),
-                title: video['title'] ?? '',
-                channelImage: video['author']?['avatar']?.isNotEmpty == true
-                    ? video['author']['avatar'][0]['url']
-                    : '',
               ),
             );
           },
